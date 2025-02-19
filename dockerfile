@@ -57,12 +57,21 @@ RUN if [ "$INSTALL_BARK" = "true" ]; then \
 # Final image
 FROM bark AS final
 
-# Copy application code to the container
-COPY . /app
-
 # Set working directory
 WORKDIR /app
-RUN uv sync --frozen
+
+# Install python deps
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
+
+# Copy application code to the container
+ADD . /app
+
+# Sync the project
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
 
 # Expose port 12393 (the new default port)
 EXPOSE 12393

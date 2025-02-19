@@ -10,8 +10,6 @@ services:
         INSTALL_BARK: "false"
     ports:
       - "12393:12393"
-    volumes:
-      - .:/app
     environment:
       - DEBIAN_FRONTEND=noninteractive
-    command: ["uv", "run", "run_server.py"]
+    command: ["uv", "run", "run_server.py", "--verbose"]
